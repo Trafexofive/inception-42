@@ -18,7 +18,7 @@ RUN apt update && apt upgrade
 
 RUN apt install -y nginx
 
-RUN 
+EXPOSE 9000
 
 
 CMD [ "./main.sh" ]

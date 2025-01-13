@@ -14,6 +14,18 @@ NAME = srcs/docker-compose.yml
 
 all: build
 
+ssh: all
+	docker-compose -f $(NAME) exec backend /bin/sh
+
+backend:
+	docker-compose -f $(NAME) up backend
+
+maria:
+	docker-compose -f $(NAME) up maria
+
+nginx:
+	docker-compose -f $(NAME) up nginx
+
 build: 
 	docker-compose -f $(NAME) build
 

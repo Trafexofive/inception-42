@@ -12,22 +12,32 @@
 
 
 services:
-  nginx:
-    build:
-      context: .
-      dockerfile: nginx/Dockerfile
+  # nginx:
+  #   build:
+  #     context: .
+  #     dockerfile: nginx/Dockerfile
 
-  maria-db:
-    build:
-      context: .
-      dockerfile: mariadb/Dockerfile
-    ports:
-      - 22201:3306
-    volumes:
-      - :/db-data
+  # maria-db:
+  #   build:
+  #     context: .
+  #     dockerfile: mariadb/Dockerfile
+  #   ports:
+  #     - :3306
+  #   volumes:
+  #     - :/db-data
 
   backend:
     build:
       context: .
-      dockerfile: wordpress/Dockerfile
+      dockerfile: ./wordpress/Dockerfile
+    healthcheck:
+      test: ["CMD", "echo", "healthcheck"]
+      interval: 10s
+      timeout: 3s
+      retries: 3 
     #php+wordpress
+
+
+volumes:
+  # db-data:
+  wordpress:
