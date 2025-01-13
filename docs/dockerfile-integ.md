@@ -20,7 +20,6 @@ Integrating a Dockerfile into Docker Compose
 
 To integrate a Dockerfile into a Docker Compose file, you need to define a service in the `docker-compose.yml` file that uses the `build` directive to point to the location of the Dockerfile. Here's an example:
 ```yaml
-version: '3.8'
 services:
   web:
     build:

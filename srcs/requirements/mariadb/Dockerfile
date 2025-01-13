@@ -1,33 +1,34 @@
 # **************************************************************************** #
 #                                                                              #
 #                                                         :::      ::::::::    #
-#    docker-compose.yml                                 :+:      :+:    :+:    #
+#    Dockerfile                                         :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
 #    By: mlamkadm <mlamkadm@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2025/01/13 16:46:59 by mlamkadm          #+#    #+#              #
-#    Updated: 2025/01/13 16:46:59 by mlamkadm         ###   ########.fr        #
+#    Created: 2025/01/13 17:13:27 by mlamkadm          #+#    #+#              #
+#    Updated: 2025/01/13 17:13:27 by mlamkadm         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 
-services:
-  nginx:
-    build:
-      context: .
-      dockerfile: nginx/Dockerfile
+FROM debian
 
-  maria-db:
-    build:
-      context: .
-      dockerfile: mariadb/Dockerfile
-    ports:
-      - 22201:3306
-    volumes:
-      - :/db-data
+WORKDIR .
 
-  backend:
-    build:
-      context: .
-      dockerfile: wordpress/Dockerfile
-    #php+wordpress
+VOLUME [ "/db-data" ]
+
+EXPOSE 3306
+
+COPY . .
+
+
+RUN apt update && apt upgrade
+
+RUN apt install -y mariadb-server
+RUN mysql_secure_installation
+
+# RUN 
+
+
+CMD [ "./main.sh" ]
+
