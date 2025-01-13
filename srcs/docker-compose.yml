@@ -29,7 +29,7 @@ services:
   backend:
     build:
       context: .
-      dockerfile: ./wordpress/Dockerfile
+      dockerfile: ./requirements/wordpress/Dockerfile
     healthcheck:
       test: ["CMD", "echo", "healthcheck"]
       interval: 10s

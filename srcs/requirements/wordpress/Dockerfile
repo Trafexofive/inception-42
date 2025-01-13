@@ -23,17 +23,14 @@ RUN apt-get install php-cli
 
 # ===== { wp plugins
 
-RUN wp core install --url=localhost --title="TEST SITE" --admin_user=admin --admin_password=admin --admin_email=admin@example.com
+# RUN wp core install --url=localhost --title="TEST SITE" --admin_user=admin --admin_password=admin --admin_email=admin@example.com
 
-HEALTHCHECK CMD [ "wp -v" ]
+EXPOSE 9000
+# HEALTHCHECK CMD [ "wp -v" ]
 
 # ===== { wp plugins
 # RUN wp plugin install yoast-seo
 # RUN wp plugin activate yoast-seo
 
-
-EXPOSE 9000
-
-
-CMD [ "./main.sh" ]
+# CMD [ "./main.sh" ]
 

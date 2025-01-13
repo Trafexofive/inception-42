@@ -14,6 +14,9 @@ NAME = srcs/docker-compose.yml
 
 all: build
 
+logs: all
+	docker-compose -f $(NAME) logs -f
+
 ssh: all
 	docker-compose -f $(NAME) exec backend /bin/sh
 
