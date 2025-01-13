@@ -10,27 +10,17 @@
 #                                                                              #
 # **************************************************************************** #
 
-FROM debian
+FROM debian:latest
 
-RUN apt update && apt upgrade
-
-RUN apt install -y wget wp-cli
-
-RUN apt-get install -y php
-
-# ===== { php plugins
-RUN apt-get install php-cli
-
-# ===== { wp plugins
-
-# RUN wp core install --url=localhost --title="TEST SITE" --admin_user=admin --admin_password=admin --admin_email=admin@example.com
+RUN set -ex \
+  && apt-get update \
+  && apt-get install -y wget \
+  && wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -O /usr/local/bin/wp \
+  && chmod +x /usr/local/bin/wp \
+  && apt-get install -y php php-cli \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/*
 
 EXPOSE 9000
-# HEALTHCHECK CMD [ "wp -v" ]
 
-# ===== { wp plugins
-# RUN wp plugin install yoast-seo
-# RUN wp plugin activate yoast-seo
-
-# CMD [ "./main.sh" ]
-
+CMD [ "sleep", "infinity" ]
