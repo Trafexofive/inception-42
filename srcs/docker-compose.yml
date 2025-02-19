@@ -17,27 +17,27 @@ services:
   #     context: .
   #     dockerfile: nginx/Dockerfile
 
-  # maria-db:
-  #   build:
-  #     context: .
-  #     dockerfile: mariadb/Dockerfile
-  #   ports:
-  #     - :3306
-  #   volumes:
-  #     - :/db-data
-
-  backend:
+  maria-db:
     build:
       context: .
-      dockerfile: ./requirements/wordpress/Dockerfile
-    healthcheck:
-      test: ["CMD", "echo", "healthcheck"]
-      interval: 10s
-      timeout: 3s
-      retries: 3 
+      dockerfile: /mariadb/Dockerfile
+    ports:
+      - :3306
+    volumes:
+      - /db-data:/db-data
+
+  # backend:
+  #   build:
+  #     context: .
+  #     dockerfile: ./requirements/wordpress/Dockerfile
+  #   healthcheck:
+  #     test: ["CMD", "echo", "healthcheck"]
+  #     interval: 10s
+  #     timeout: 3s
+  #     retries: 3 
     #php+wordpress
 
 
-volumes:
+# volumes:
   # db-data:
-  wordpress:
+  # wordpress:

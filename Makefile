@@ -17,6 +17,9 @@ all: build
 logs: all
 	docker-compose -f $(NAME) logs -f
 
+maria-it: all
+	docker-compose -f $(NAME) exec maria /bin/sh
+
 ssh: all
 	docker-compose -f $(NAME) exec backend /bin/sh
 

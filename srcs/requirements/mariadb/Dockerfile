@@ -11,9 +11,9 @@
 # **************************************************************************** #
 
 
-FROM debian
+FROM debian:bullseye
 
-WORKDIR .
+# WORKDIR .
 
 VOLUME [ "/db-data" ]
 
@@ -24,10 +24,9 @@ EXPOSE 3306
 RUN apt update && apt upgrade
 
 RUN apt install -y mariadb-server
-RUN mysql_secure_installation
 
-# RUN 
+# CMD [ "./setup.sh" ]
 
+ENTRYPOINT [ "bash" ]
 
-CMD [ "./main.sh" ]
 
