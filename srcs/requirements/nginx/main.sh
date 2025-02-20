@@ -1,17 +1,13 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    main.sh                                            :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: mlamkadm <mlamkadm@student.42.fr>          +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2025/01/13 16:44:11 by mlamkadm          #+#    #+#              #
-#    Updated: 2025/01/13 16:44:11 by mlamkadm         ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
-
 #!/bin/bash
 
+set -e
+backend="${BACKEND:-localhost}"
+port="${PORT:-80}"
+username="${USERNAME:-user}"
+password="${PASSWORD:-pass}"
 
+htpasswd -c -b /etc/nginx/.htpasswd "$username" "$password"
 
-# Nginx setup
+sed "s/BACKEND/$backend/; s/PORT/$port/" /etc/nginx/nginx.default.conf > /etc/nginx/nginx.conf
+
+nginx -c /etc/nginx/nginx.conf

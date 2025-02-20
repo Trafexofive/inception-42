@@ -11,33 +11,45 @@
 # **************************************************************************** #
 
 
+
 services:
-  # nginx:
-  #   build:
-  #     context: .
-  #     dockerfile: nginx/Dockerfile
+  nginx:
+    build:
+      context: .
+      dockerfile: requirements/nginx/Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
 
   maria-db:
     build:
       context: .
-      dockerfile: /mariadb/Dockerfile
+      dockerfile: requirements/mariadb/Dockerfile
     ports:
-      - :3306
+      - "3306:3306"
     volumes:
-      - /db-data:/db-data
+      - db-data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
 
-  # backend:
-  #   build:
-  #     context: .
-  #     dockerfile: ./requirements/wordpress/Dockerfile
-  #   healthcheck:
-  #     test: ["CMD", "echo", "healthcheck"]
-  #     interval: 10s
-  #     timeout: 3s
-  #     retries: 3 
-    #php+wordpress
+  backend:
+    build:
+      context: .
+      dockerfile: requirements/wordpress/Dockerfile
+    volumes:
+      - wordpress-data:/var/www/html
+    environment:
+      WORDPRESS_DB_HOST: maria-db
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+    depends_on:
+      - maria-db
 
-
-# volumes:
-  # db-data:
-  # wordpress:
+volumes:
+  db-data:
+  wordpress-data:
