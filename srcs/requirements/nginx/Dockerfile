@@ -10,15 +10,19 @@
 #                                                                              #
 # **************************************************************************** #
 
-FROM debian
+FROM debian:buster
 
-COPY ./config /etc/nginx/conf.d/
 
-RUN apt update && apt upgrade
 
-RUN apt install -y nginx
+RUN apt-get update
+RUN apt-get install -y nginx
+
+
+COPY . /etc/nginx/conf.d/
 
 EXPOSE 9000
+
+# ENTRYPOINT ["nginx", "-g", "daemon off;"]
 
 ENTRYPOINT ["tail", "-f", "/bin/bash"]
 

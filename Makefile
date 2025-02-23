@@ -18,7 +18,10 @@ logs: all
 	docker-compose -f $(NAME) logs -f
 
 maria-it: all
-	docker-compose exec maria-db /bin/sh
+	docker-compose exec maria-db /bin/bash
+
+nginx-it: all
+	docker-compose exec nginx /bin/bash
 
 ssh: all
 	docker-compose -f $(NAME) exec backend /bin/sh
@@ -53,11 +56,17 @@ rmi: kill-all
 run:
 	docker-compose -f $(NAME) up -d
 
-prune:
-	docker system prune
+# prune:
+# 	docker system prune
 
 prune: kill-all
 	docker system prune
+
+# Basic cleanup (removes containers, images, build cache, networks)
+# docker system prune -f
+
+# Advanced cleanup (includes volumes)
+# docker system prune --volumes -af
 
 re: fclean all
 
