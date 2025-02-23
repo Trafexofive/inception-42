@@ -10,46 +10,48 @@
 #                                                                              #
 # **************************************************************************** #
 
-
-
 services:
   nginx:
+    container_name: nginx
+    image: nginx
     build:
       context: .
       dockerfile: requirements/nginx/Dockerfile
     ports:
-      - "80:80"
-    depends_on:
-      - backend
+      - "443:9000"
+    # depends_on:
+    #   - backend
 
   maria-db:
+    container_name: maria-db
+    image: maria-db
     build:
       context: .
       dockerfile: requirements/mariadb/Dockerfile
     ports:
-      - "3306:3306"
-    volumes:
-      - db-data:/var/lib/mysql
+      - ":3306"
+    # volumes:
+    #   - data/db:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_DATABASE: wordpress
       MYSQL_USER: wordpress
       MYSQL_PASSWORD: wordpress
 
-  backend:
-    build:
-      context: .
-      dockerfile: requirements/wordpress/Dockerfile
-    volumes:
-      - wordpress-data:/var/www/html
-    environment:
-      WORDPRESS_DB_HOST: maria-db
-      WORDPRESS_DB_USER: wordpress
-      WORDPRESS_DB_PASSWORD: wordpress
-      WORDPRESS_DB_NAME: wordpress
-    depends_on:
-      - maria-db
+  # backend:
+  #   build:
+  #     context: .
+  #     dockerfile: requirements/wordpress/Dockerfile
+  #   volumes:
+  #     - wordpress-data:/var/www/html
+  #   environment:
+  #     WORDPRESS_DB_HOST: maria-db
+  #     WORDPRESS_DB_USER: wordpress
+  #     WORDPRESS_DB_PASSWORD: wordpress
+  #     WORDPRESS_DB_NAME: wordpress
+  #   depends_on:
+  #     - maria-db
 
-volumes:
-  db-data:
-  wordpress-data:
+# volumes:
+#   :/data/
+  # wordpress-data:

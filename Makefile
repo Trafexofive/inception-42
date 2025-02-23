@@ -18,7 +18,7 @@ logs: all
 	docker-compose -f $(NAME) logs -f
 
 maria-it: all
-	docker-compose -f $(NAME) exec maria /bin/sh
+	docker-compose exec maria-db /bin/sh
 
 ssh: all
 	docker-compose -f $(NAME) exec backend /bin/sh
@@ -27,13 +27,13 @@ backend:
 	docker-compose -f $(NAME) up backend
 
 maria:
-	docker-compose -f $(NAME) up maria
+	docker-compose -f $(NAME) up maria-db -it bin/bash
 
 nginx:
 	docker-compose -f $(NAME) up nginx
 
 build: 
-	docker-compose -f $(NAME) build
+	docker compose -f $(NAME) build
 
 clean :
 	docker-compose -f $(NAME) down
@@ -43,6 +43,21 @@ fclean: clean
 
 detach: all
 	docker-compose -f $(NAME) up -d
+
+kill-all:
+	docker kill $(docker ps -aq)
+
+rmi: kill-all
+	docker image rm $(docker images -aq)
+
+run:
+	docker-compose -f $(NAME) up -d
+
+prune:
+	docker system prune
+
+prune: kill-all
+	docker system prune
 
 re: fclean all
 

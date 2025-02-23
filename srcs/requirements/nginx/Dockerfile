@@ -12,7 +12,7 @@
 
 FROM debian
 
-COPY ./conf /etc/nginx/conf.d/
+COPY ./config /etc/nginx/conf.d/
 
 RUN apt update && apt upgrade
 
@@ -20,6 +20,7 @@ RUN apt install -y nginx
 
 EXPOSE 9000
 
+ENTRYPOINT ["tail", "-f", "/bin/bash"]
 
-CMD [ "./main.sh" ]
+# CMD [ "./main.sh" ]
 
