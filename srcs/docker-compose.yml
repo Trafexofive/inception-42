@@ -38,19 +38,21 @@ services:
       MYSQL_USER: wordpress
       MYSQL_PASSWORD: wordpress
 
-  # backend:
-  #   build:
-  #     context: .
-  #     dockerfile: requirements/wordpress/Dockerfile
-  #   volumes:
-  #     - wordpress-data:/var/www/html
-  #   environment:
-  #     WORDPRESS_DB_HOST: maria-db
-  #     WORDPRESS_DB_USER: wordpress
-  #     WORDPRESS_DB_PASSWORD: wordpress
-  #     WORDPRESS_DB_NAME: wordpress
-  #   depends_on:
-  #     - maria-db
+  wordpress:
+    image: wordpress
+    container_name: wordpress
+    build:
+      context: .
+      dockerfile: requirements/wordpress/Dockerfile
+    # volumes:
+    #   - wordpress-data:/var/www/html
+    environment:
+      WORDPRESS_DB_HOST: maria-db
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+    depends_on:
+      - maria-db
 
 # volumes:
 #   :/data/
