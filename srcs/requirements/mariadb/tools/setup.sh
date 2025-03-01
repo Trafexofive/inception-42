@@ -43,4 +43,4 @@ mysqladmin shutdown -p$MYSQL_ROOT_PASSWORD
 # Keep the script running to keep container alive
 echo "Setup complete, keeping MariaDB running..."
 
-$@
+exec $@

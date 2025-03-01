@@ -6,7 +6,7 @@
 #    By: mlamkadm <mlamkadm@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/13 19:00:37 by mlamkadm          #+#    #+#              #
-#    Updated: 2025/01/13 19:00:37 by mlamkadm         ###   ########.fr        #
+#    Updated: 2025/03/01 06:13:24 by mlamkadm         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,15 +16,15 @@ EXPOSE 9000
 
 RUN apt-get update -y \
   && apt-get upgrade -y \
-  && apt-get install -y vim curl php php-fpm php-mysql php-xml php-mbstring
+  && apt-get install -y vim wget php php-fpm php-mysql php-xml php-mbstring
 
-RUN sed -i "s|/run/php/php7.3-fpm.sock|0.0.0.0|g" /etc/php/7.3/fpm/pool.d/www.conf \
+RUN sed -i "s|/run/php/php7.3-fpm.sock|9000|g" /etc/php/7.3/fpm/pool.d/www.conf \
     && mkdir -p /run/php \
     && chown www-data:www-data /run/php \
     && chmod 755 /run/php
 
 
-RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar\
+RUN wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar\
     && chmod +x wp-cli.phar \
     && mv wp-cli.phar /bin/wp
 

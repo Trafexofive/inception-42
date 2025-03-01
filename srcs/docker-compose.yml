@@ -6,7 +6,7 @@
 #    By: mlamkadm <mlamkadm@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/13 16:46:59 by mlamkadm          #+#    #+#              #
-#    Updated: 2025/01/13 16:46:59 by mlamkadm         ###   ########.fr        #
+#    Updated: 2025/03/01 05:58:50 by mlamkadm         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -62,6 +62,8 @@ services:
       - WP_ADMIN_EMAIL=${WP_ADMIN_EMAIL}
       - WP_URL=${WP_URL}
       - WP_TITLE=${WP_TITLE}
+    ports:
+      - "9000:9000"
     networks:
       - inception-42
     volumes:

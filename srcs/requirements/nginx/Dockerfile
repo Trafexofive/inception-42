@@ -6,7 +6,7 @@
 #    By: mlamkadm <mlamkadm@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/09 21:51:53 by mlamkadm          #+#    #+#              #
-#    Updated: 2025/01/09 21:51:53 by mlamkadm         ###   ########.fr        #
+#    Updated: 2025/03/01 05:54:19 by mlamkadm         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,15 +29,14 @@ RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
     -out /etc/nginx/ssl/cert.crt\
     -subj "/C=MA/ST=settat/L=khouribga/O=1337/OU=1337/CN=mlamkadm.42.fr"
 
-
 RUN mkdir -p /var/www/wordpress
 
 RUN chown -R www-data:www-data /var/www/wordpress\
     && chmod 755 /var/www/wordpress
 
-ENTRYPOINT ["nginx"]
+ENTRYPOINT ["nginx", "-g", "daemon off;"]
 
-CMD [ "-g", "daemon off;" ]
+#CMD [ "-g", "daemon off;" ]
 
 # ENTRYPOINT ["sleep", "infinity"]
 
