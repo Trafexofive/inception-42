@@ -12,17 +12,28 @@
 
 FROM debian:bullseye
 
-RUN apt-get update
-RUN apt-get install -y mariadb-server
-
 EXPOSE 3306
 
-# VOLUME data/db
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install -y mariadb-server
 
-# CMD ["mariadbd"]
+RUN apt-get install -y vim
 
-# CMD ["tail", "-f", "/bin/bash"]
+RUN sed -i 's/127.0.0.1/0.0.0.0/g' /etc/mysql/mariadb.conf.d/50-server.cnf
 
-ENTRYPOINT ["tail", "-f", "/bin/bash"]
+RUN mkdir -p /run/mysqld && \
+    chown -R mysql:mysql /run/mysqld && \
+    chmod +x /run/mysqld
+
+COPY . .
+
+WORKDIR /tools
+
+ENTRYPOINT [ "bash", "setup.sh" ]
+
+# CMD [ "sleep", "infinity" ]
+
+CMD [ "mariadbd" ]
 
 

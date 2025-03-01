@@ -12,19 +12,32 @@
 
 FROM debian:buster
 
-
-
-RUN apt-get update
-RUN apt-get install -y nginx
-
-
-COPY . /etc/nginx/conf.d/
-
 EXPOSE 9000
 
-# ENTRYPOINT ["nginx", "-g", "daemon off;"]
+COPY ./tools/default.conf /etc/nginx/conf.d/
 
-ENTRYPOINT ["tail", "-f", "/bin/bash"]
+RUN apt-get update \
+  && apt-get upgrade -y \
+&& apt-get install -y vim nginx openssl 
 
-# CMD [ "./main.sh" ]
+RUN mkdir -p /etc/nginx/ssl \
+    && chown -R www-data:www-data /etc/nginx/ssl \
+    && chmod 755 /etc/nginx/ssl
+
+RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+    -keyout /etc/nginx/ssl/cert.key \
+    -out /etc/nginx/ssl/cert.crt\
+    -subj "/C=MA/ST=settat/L=khouribga/O=1337/OU=1337/CN=mlamkadm.42.fr"
+
+
+RUN mkdir -p /var/www/wordpress
+
+RUN chown -R www-data:www-data /var/www/wordpress\
+    && chmod 755 /var/www/wordpress
+
+ENTRYPOINT ["nginx"]
+
+CMD [ "-g", "daemon off;" ]
+
+# ENTRYPOINT ["sleep", "infinity"]
 

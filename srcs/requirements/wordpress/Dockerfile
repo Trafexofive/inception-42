@@ -10,17 +10,33 @@
 #                                                                              #
 # **************************************************************************** #
 
-FROM debian:latest
-
-RUN set -ex \
-  && apt-get update \
-  && apt-get install -y wget \
-  && wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -O /usr/local/bin/wp \
-  && chmod +x /usr/local/bin/wp \
-  && apt-get install -y php php-cli \
-  && apt-get clean \
-  && rm -rf /var/lib/apt/lists/*
+FROM debian:buster
 
 EXPOSE 9000
 
-CMD [ "sleep", "infinity" ]
+RUN apt-get update -y \
+  && apt-get upgrade -y \
+  && apt-get install -y vim curl php php-fpm php-mysql php-xml php-mbstring
+
+RUN sed -i "s|/run/php/php7.3-fpm.sock|0.0.0.0|g" /etc/php/7.3/fpm/pool.d/www.conf \
+    && mkdir -p /run/php \
+    && chown www-data:www-data /run/php \
+    && chmod 755 /run/php
+
+
+RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar\
+    && chmod +x wp-cli.phar \
+    && mv wp-cli.phar /bin/wp
+
+
+COPY . .
+
+WORKDIR /var/www/wordpress
+
+
+RUN chmod +x /tools/setup.sh
+
+ENTRYPOINT ["bash", "/tools/setup.sh" ]
+
+CMD [ "php-fpm7.3", "-F" ]
+

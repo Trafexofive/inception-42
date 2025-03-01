@@ -1,4 +1,3 @@
 
-main.sh/
-setup.sh/
-Dockerfile
+*/
+!tools/*
