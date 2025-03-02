@@ -12,9 +12,6 @@
 
 #!/bin/bash
 
-
-sleep 7 # replace with healthcheck
-
 # checkers for the the installation of wp.
 
 # Core Initialization

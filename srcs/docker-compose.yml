@@ -5,8 +5,8 @@
 #                                                     +:+ +:+         +:+      #
 #    By: mlamkadm <mlamkadm@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2025/01/13 16:46:59 by mlamkadm          #+#    #+#              #
-#    Updated: 2025/03/01 05:58:50 by mlamkadm         ###   ########.fr        #
+#    Created: 2025/03/02 00:17:34 by mlamkadm          #+#    #+#              #
+#    Updated: 2025/03/02 00:17:34 by mlamkadm         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,9 +23,16 @@ services:
       - inception-42
     ports:
       - "4443:443"
-    depends_on:
-      - wordpress
+    # depends_on:
+      # wordpress:
+      #   condition: service_healthy
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "https://localhost:443", "-k", "||", "exit", "1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
 
   maria-db:
     container_name: maria-db
@@ -44,8 +51,12 @@ services:
       - ":3306"
     volumes:
       - maria-db:/var/lib/mysql
-    # healthcheck:
-    # implement in the future for orchestration.
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "--user=${WP_USER}", "--password=${WP_PASS}"]
+      interval: 20s
+      timeout: 15s
+      retries: 3
+      start_period: 10s 
     restart: unless-stopped
 
   wordpress:
@@ -63,14 +74,21 @@ services:
       - WP_URL=${WP_URL}
       - WP_TITLE=${WP_TITLE}
     ports:
-      - "9000:9000"
+      - ":9000"
     networks:
       - inception-42
     volumes:
       - wordpress:/var/www/wordpress
     depends_on:
-      - maria-db
+      maria-db:
+        condition: service_healthy
     restart: unless-stopped
+    # healthcheck:
+    #   test: ["CMD", "cgi-fcgi", "-bind", "-connect", "localhost:9000"]
+    #   interval: 20s
+    #   timeout: 10s
+    #   retries: 3
+    #   start_period: 30s
 
 volumes:
   maria-db:
@@ -81,5 +99,3 @@ volumes:
 networks:
   inception-42:
     name: inception-network
-    
-

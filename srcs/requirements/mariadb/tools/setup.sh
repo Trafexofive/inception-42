@@ -44,3 +44,6 @@ mysqladmin shutdown -p$MYSQL_ROOT_PASSWORD
 echo "Setup complete, keeping MariaDB running..."
 
 exec $@
+
+
+
