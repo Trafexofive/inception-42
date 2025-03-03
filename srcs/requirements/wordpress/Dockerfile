@@ -16,7 +16,7 @@ EXPOSE 9000
 
 RUN apt-get update -y \
   && apt-get upgrade -y \
-  && apt-get install -y vim wget php php-fpm php-mysql php-xml php-mbstring
+  && apt-get install -y vim wget php php-fpm php-mysql php-xml php-mbstring mariadb-client
 
 RUN sed -i "s|/run/php/php7.3-fpm.sock|9000|g" /etc/php/7.3/fpm/pool.d/www.conf \
     && mkdir -p /run/php \
@@ -39,4 +39,3 @@ RUN chmod +x /tools/setup.sh
 ENTRYPOINT ["bash", "/tools/setup.sh" ]
 
 CMD [ "php-fpm7.3", "-F" ]
-

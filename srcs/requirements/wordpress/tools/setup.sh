@@ -5,28 +5,79 @@
 #                                                     +:+ +:+         +:+      #
 #    By: mlamkadm <mlamkadm@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2025/03/01 01:23:44 by mlamkadm          #+#    #+#              #
-#    Updated: 2025/03/01 06:17:47 by mlamkadm         ###   ########.fr        #
+#    Created: 2025/03/03 13:07:58 by mlamkadm          #+#    #+#              #
+#    Updated: 2025/03/03 13:07:58 by mlamkadm         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 #!/bin/bash
 
-sleep 5
-# checkers for the the installation of wp.
+# Create www-data directories and set permissions
+mkdir -p /var/www/wordpress
+chown www-data:www-data /var/www/wordpress
+cd /var/www/wordpress
 
-# Core Initialization
-wp core download --allow-root
-sleep 1
+# Wait for database to be ready
+echo "Waiting for database connection..."
+max_attempts=30
+attempts=0
 
-wp core config --dbname="$WORDPRESS_DB_NAME" --dbuser="$WORDPRESS_USER" --dbpass="$WORDPRESS_PASSWORD" --dbhost="maria-db" --skip-check  --allow-root
+# First download WordPress core files if they don't exist
+if [ ! -f "wp-load.php" ]; then
+    echo "Downloading WordPress core files..."
+    wp core download --allow-root
+fi
 
-sleep 1
-wp core install --url="$WP_URL" --title="$WP_TITLE" --admin_user="$WORDPRESS_USER" --admin_password="$WORDPRESS_PASSWORD" --admin_email="$WP_ADMIN_EMAIL" --allow-root
+# Create wp-config.php if it doesn't exist
+if [ ! -f "wp-config.php" ]; then
+    echo "Creating WordPress configuration..."
+    wp config create \
+        --dbname="$WORDPRESS_DB_NAME" \
+        --dbuser="$WORDPRESS_USER" \
+        --dbpass="$WORDPRESS_PASSWORD" \
+        --dbhost="maria-db" \
+        --allow-root
+fi
 
-#adding the second user
+# Wait for database to be ready
+while ! wp db check --allow-root 2>/dev/null; do
+    sleep 2
+    attempts=$((attempts+1))
+    echo "Waiting for database connection... Attempt $attempts/$max_attempts"
+    
+    if [ $attempts -ge $max_attempts ]; then
+        echo "Could not connect to database after $max_attempts attempts. Exiting."
+        exit 1
+    fi
+done
 
-exec $@
+echo "Database connection established!"
 
+# Install WordPress if not already installed
+wp core is-installed --allow-root
+if [ $? -ne 0 ]; then
+    echo "Installing WordPress..."
+    wp core install \
+        --url="https://localhost:4443" \
+        --title="$WP_TITLE" \
+        --admin_user="$WP_ADMIN_USER" \
+        --admin_password="$WP_ADMIN_PASS" \
+        --admin_email="$WP_ADMIN_EMAIL" \
+        --allow-root
+    
+    echo "WordPress installation complete!"
+else
+    echo "WordPress already installed!"
+    
+    # Update site URL and home URL to use localhost
+    echo "Updating WordPress site URLs to use localhost:4443..."
+    wp option update siteurl "https://localhost:4443" --allow-root
+    wp option update home "https://localhost:4443" --allow-root
+fi
 
+# Fix permissions for all WordPress files
+chown -R www-data:www-data /var/www/wordpress
 
+# Execute the command passed to this script
+echo "Starting PHP-FPM..."
+exec "$@"
