@@ -27,7 +27,8 @@ RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
     -out /etc/nginx/ssl/cert.crt\
     -subj "/C=MA/ST=settat/L=khouribga/O=1337/OU=1337/CN=mlamkadm.42.fr"
     
-COPY --user=www-data ./tools/default.conf /etc/nginx/sites-enabled/
+#--user=www-data
+COPY --chown=www-data:www-data ./tools/default.conf /etc/nginx/sites-enabled/
 
 # RUN mkdir -p /var/www/wordpress \
 #     && chown -R www-data:www-data /var/www/wordpress \

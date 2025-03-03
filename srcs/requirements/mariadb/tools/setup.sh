@@ -14,7 +14,7 @@ mariadbd &
 
 # Wait for MariaDB to start
 echo "Waiting for MariaDB to start..."
-sleep 3
+sleep 7
 
 # Check if the database has been secured already
 if mysql -u root -e "SELECT 1" &>/dev/null; then

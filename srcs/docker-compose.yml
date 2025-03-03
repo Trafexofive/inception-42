@@ -27,12 +27,12 @@ services:
       # wordpress:
       #   condition: service_healthy
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "https://localhost:443", "-k", "||", "exit", "1"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 15s
+    # healthcheck:
+    #   test: ["CMD", "curl", "-f", "https://localhost:443", "-k", "||", "exit", "1"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 3
+    #   start_period: 15s
 
   maria-db:
     container_name: maria-db
@@ -51,12 +51,12 @@ services:
       - ":3306"
     volumes:
       - maria-db:/var/lib/mysql
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "--user=${WP_USER}", "--password=${WP_PASS}"]
-      interval: 20s
-      timeout: 15s
-      retries: 3
-      start_period: 10s 
+    # healthcheck:
+    #   test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "--user=${WP_USER}", "--password=${WP_PASS}"]
+    #   interval: 20s
+    #   timeout: 15s
+    #   retries: 3
+    #   start_period: 10s 
     restart: unless-stopped
 
   wordpress:
@@ -81,7 +81,7 @@ services:
       - wordpress:/var/www/wordpress
     depends_on:
       maria-db:
-        condition: service_healthy
+        condition: service_started
     restart: unless-stopped
     # healthcheck:
     #   test: ["CMD", "cgi-fcgi", "-bind", "-connect", "localhost:9000"]

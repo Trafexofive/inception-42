@@ -12,6 +12,7 @@
 
 #!/bin/bash
 
+sleep 5
 # checkers for the the installation of wp.
 
 # Core Initialization
