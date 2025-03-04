@@ -50,7 +50,7 @@ clean:
 
 
 prune:
-	docker system prune -af
+	docker system prune -f
 
 
 # kill-all:
