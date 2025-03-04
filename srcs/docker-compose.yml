@@ -70,6 +70,8 @@ services:
       - WORDPRESS_USER=${WP_USER}
       - WORDPRESS_PASSWORD=${WP_PASS}
 
+      - WP_ADMIN_PASS=${WP_ADMIN_PASS}
+      - WP_ADMIN_USER=${WP_ADMIN_USER}
       - WP_ADMIN_EMAIL=${WP_ADMIN_EMAIL}
       - WP_URL=${WP_URL}
       - WP_TITLE=${WP_TITLE}
