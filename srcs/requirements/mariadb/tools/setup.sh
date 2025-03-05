@@ -11,6 +11,7 @@ mariadbd &
 
 # Wait for MariaDB to start
 echo "Waiting for MariaDB to start..."
+
 sleep 5
 
 # Check if the database exists already

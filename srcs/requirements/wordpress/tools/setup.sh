@@ -12,6 +12,8 @@
 
 #!/bin/bash
 
+sleep 10
+
 # Create www-data directories and set permissions
 mkdir -p /var/www/wordpress
 chown www-data:www-data /var/www/wordpress
@@ -19,8 +21,8 @@ cd /var/www/wordpress
 
 # Wait for database to be ready
 echo "Waiting for database connection..."
-max_attempts=30
-attempts=0
+max_attempts=10
+attempts=3
 
 # First download WordPress core files if they don't exist
 if [ ! -f "wp-load.php" ]; then
@@ -58,7 +60,7 @@ wp core is-installed --allow-root
 if [ $? -ne 0 ]; then
     echo "Installing WordPress..."
     wp core install \
-        --url="https://localhost:4443" \
+        --url="https://localhost" \
         --title="$WP_TITLE" \
         --admin_user="$WP_ADMIN_USER" \
         --admin_password="$WP_ADMIN_PASS" \
@@ -69,10 +71,6 @@ if [ $? -ne 0 ]; then
 else
     echo "WordPress already installed!"
     
-    # Update site URL and home URL to use localhost
-    echo "Updating WordPress site URLs to use localhost:4443..."
-    wp option update siteurl "https://localhost:4443" --allow-root
-    wp option update home "https://localhost:4443" --allow-root
 fi
 
 # Fix permissions for all WordPress files
@@ -80,4 +78,5 @@ chown -R www-data:www-data /var/www/wordpress
 
 # Execute the command passed to this script
 echo "Starting PHP-FPM..."
+
 exec "$@"

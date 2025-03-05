@@ -1,9 +1,7 @@
 
-FROM debian:buster
+FROM debian:bullseye
 
-EXPOSE 443
-
-RUN apt-get update \
+RUN apt-get update -y\
     && apt-get upgrade -y \
     && apt-get install -y nginx openssl 
 
@@ -20,4 +18,4 @@ RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
 
 COPY --chown=www-data:www-data ./tools/default.conf /etc/nginx/sites-enabled/
 
-ENTRYPOINT ["nginx", "-g", "daemon off;"]
+CMD ["nginx", "-g", "daemon off;"]
