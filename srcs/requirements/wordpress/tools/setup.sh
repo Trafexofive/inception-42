@@ -11,18 +11,14 @@
 # **************************************************************************** #
 
 #!/bin/bash
-
-sleep 10
-
 # Create www-data directories and set permissions
-mkdir -p /var/www/wordpress
-chown www-data:www-data /var/www/wordpress
-cd /var/www/wordpress
 
+
+sleep 5
 # Wait for database to be ready
 echo "Waiting for database connection..."
-max_attempts=10
-attempts=3
+max_attempts=3
+attempts=1
 
 # First download WordPress core files if they don't exist
 if [ ! -f "wp-load.php" ]; then
@@ -41,26 +37,12 @@ if [ ! -f "wp-config.php" ]; then
         --allow-root
 fi
 
-# Wait for database to be ready
-while ! wp db check --allow-root 2>/dev/null; do
-    sleep 2
-    attempts=$((attempts+1))
-    echo "Waiting for database connection... Attempt $attempts/$max_attempts"
-    
-    if [ $attempts -ge $max_attempts ]; then
-        echo "Could not connect to database after $max_attempts attempts. Exiting."
-        exit 1
-    fi
-done
-
-echo "Database connection established!"
-
 # Install WordPress if not already installed
 wp core is-installed --allow-root
 if [ $? -ne 0 ]; then
     echo "Installing WordPress..."
     wp core install \
-        --url="https://localhost" \
+        --url="localhost" \ # mlamkadm.42.fr
         --title="$WP_TITLE" \
         --admin_user="$WP_ADMIN_USER" \
         --admin_password="$WP_ADMIN_PASS" \
@@ -73,8 +55,7 @@ else
     
 fi
 
-# Fix permissions for all WordPress files
-chown -R www-data:www-data /var/www/wordpress
+
 
 # Execute the command passed to this script
 echo "Starting PHP-FPM..."
