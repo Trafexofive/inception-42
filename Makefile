@@ -1,3 +1,15 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: mlamkadm <mlamkadm@student.42.fr>          +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2025/03/08 14:45:36 by mlamkadm          #+#    #+#              #
+#    Updated: 2025/03/08 14:45:36 by mlamkadm         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
 # ======================================== VARIABLES ========================================
 NAME = srcs/docker-compose.yml
 COMPOSE = docker-compose -f $(NAME)
@@ -9,28 +21,27 @@ all: build
 
 # ======================================== CONTAINER MANAGEMENT ========================================
 
-# Build containers without starting
 build:
 	@echo "Building containers..."
 	@$(COMPOSE) build
 
-# Start containers in detached mode (after building)
+no-cache:
+	@echo "Building containers..."
+	@$(COMPOSE) build --no-cache
+
 up: build
 	@echo "Starting containers in detached mode..."
 	@$(COMPOSE) up -d
 
-# Stop and remove containers
 down:
 	@echo "Stopping containers..."
 	@$(COMPOSE) down
 
-# Build and start containers, showing logs
-run: down build
+run: down no-cache # Build without cache for now
 	@echo "Starting containers and following logs..."
 	@$(COMPOSE) up -d
 	@$(COMPOSE) logs -f
 
-# Display container logs
 logs:
 	@echo "Displaying logs..."
 	@$(COMPOSE) logs -f
@@ -41,7 +52,6 @@ it:
 exec:
 	@$(COMPOSE) exec $(filter-out $@, $(MAKECMDGOALS))
 
-# List containers, volumes and images
 ls:
 	@echo "===== Containers ====="
 	@$(COMPOSE) ps

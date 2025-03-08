@@ -11,22 +11,18 @@
 # **************************************************************************** #
 
 #!/bin/bash
-# Create www-data directories and set permissions
+set -e
 
-
-sleep 5
-# Wait for database to be ready
 echo "Waiting for database connection..."
-max_attempts=3
-attempts=1
+sleep 5
 
-# First download WordPress core files if they don't exist
+# Download WordPress core files if they are not present
 if [ ! -f "wp-load.php" ]; then
     echo "Downloading WordPress core files..."
     wp core download --allow-root
 fi
 
-# Create wp-config.php if it doesn't exist
+# Create wp-config.php if it does not exist
 if [ ! -f "wp-config.php" ]; then
     echo "Creating WordPress configuration..."
     wp config create \
@@ -38,26 +34,20 @@ if [ ! -f "wp-config.php" ]; then
 fi
 
 # Install WordPress if not already installed
-wp core is-installed --allow-root
-if [ $? -ne 0 ]; then
+if ! wp core is-installed --allow-root; then
     echo "Installing WordPress..."
     wp core install \
-        --url="localhost" \ # mlamkadm.42.fr
+        --url="$WP_URL" \
         --title="$WP_TITLE" \
         --admin_user="$WP_ADMIN_USER" \
         --admin_password="$WP_ADMIN_PASS" \
         --admin_email="$WP_ADMIN_EMAIL" \
         --allow-root
-    
     echo "WordPress installation complete!"
 else
     echo "WordPress already installed!"
-    
 fi
 
-
-
-# Execute the command passed to this script
 echo "Starting PHP-FPM..."
 
 exec "$@"

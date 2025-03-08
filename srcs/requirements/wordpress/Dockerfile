@@ -10,34 +10,34 @@
 #                                                                              #
 # **************************************************************************** #
 
-FROM debian:buster
+FROM debian:bullseye
 
+# Install required packages
+RUN apt-get update && \
+    apt-get install -y wget curl php7.4-fpm php7.4-mysql php7.4-xml php7.4-mbstring mariadb-client && \
+    rm -rf /var/lib/apt/lists/*
 
-RUN apt-get update \
-  && apt-get upgrade -y \
-  && apt-get install -y wget curl php php7.3-fpm php-mysql php-xml php-mbstring mariadb-client
+# Update PHP-FPM socket configuration to use TCP port 9000
+RUN sed -i "s|/run/php/php7.4-fpm.sock|9000|g" /etc/php/7.4/fpm/pool.d/www.conf && \
+    mkdir -p /run/php && \
+    chown www-data:www-data /run/php && \
+    chmod 755 /run/php
 
+# Install WP-CLI
+RUN wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
+    chmod +x wp-cli.phar && \
+    mv wp-cli.phar /usr/local/bin/wp
 
-RUN sed -i "s|/run/php/php7.3-fpm.sock|9000|g" /etc/php/7.3/fpm/pool.d/www.conf \
-    && mkdir -p /run/php \
-    && chown www-data:www-data /run/php \
-    && chmod 755 /run/php
+# Copy sources (including the setup script) into the container
+COPY . /app
 
+RUN chmod +x /app/tools/setup.sh
 
-RUN wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar\
-    && chmod +x wp-cli.phar \
-    && mv wp-cli.phar /bin/wp
-
-COPY . .
-
-RUN chmod +x /tools/setup.sh
-
+# Switch to non-root user for running WordPress
 USER www-data
-
 
 WORKDIR /var/www/wordpress
 
+ENTRYPOINT ["bash", "/app/tools/setup.sh"]
 
-ENTRYPOINT ["bash", "/tools/setup.sh" ]
-
-CMD [ "php-fpm7.3", "-F" ]
+CMD [ "php-fpm7.4", "-F" ]

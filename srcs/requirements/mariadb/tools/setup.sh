@@ -1,24 +1,22 @@
 #!/bin/bash
+set -e
 
-# Check if MariaDB data directory is already initialized
+echo "Starting MariaDB setup..."
+
+# Initialize the MariaDB data directory if needed
 if [ ! -d "/var/lib/mysql/mysql" ]; then
-    # If not initialized, run mysql_install_db
+    echo "Initializing MariaDB data directory..."
     mysql_install_db --user=mysql --datadir=/var/lib/mysql
 fi
 
 # Start MariaDB server in the background
 mariadbd &
-
-# Wait for MariaDB to start
 echo "Waiting for MariaDB to start..."
-
 sleep 5
 
-# Check if the database exists already
+# Check if the WordPress database exists
 if ! mysql -e "USE ${WORDPRESS_DB_NAME}" 2>/dev/null; then
     echo "Setting up MariaDB security and WordPress database..."
-    
-    # Execute SQL commands directly
     mysql <<EOF
 ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';
 DELETE FROM mysql.user WHERE User='';
@@ -30,16 +28,14 @@ CREATE USER '${WORDPRESS_USER}'@'%' IDENTIFIED BY '${WORDPRESS_PASSWORD}';
 GRANT ALL PRIVILEGES ON ${WORDPRESS_DB_NAME}.* TO '${WORDPRESS_USER}'@'%';
 FLUSH PRIVILEGES;
 EOF
-    echo "MariaDB security setup and WordPress user creation completed."
+    echo "Database setup completed."
 else
     echo "WordPress database already exists. Skipping setup."
 fi
 
-# Stop MariaDB server to restart it properly
+# Shutdown the background server to let CMD restart it properly
 mysqladmin -u root shutdown 2>/dev/null || mysqladmin -u root -p${MYSQL_ROOT_PASSWORD} shutdown
 
-# Keep the script running to keep container alive
-echo "Setup complete, starting MariaDB..."
+echo "Setup complete. Starting MariaDB..."
 
-# Execute the command passed to the script
 exec "$@"

@@ -12,25 +12,21 @@
 
 FROM debian:bullseye
 
-RUN apt-get update  && \
-    apt-get upgrade -y && \
-    apt-get install -y mariadb-server
+# Install MariaDB server without unnecessary upgrades
+RUN apt-get update && \
+    apt-get install -y mariadb-server && \
+    rm -rf /var/lib/apt/lists/*
 
+# Configure MariaDB to listen on all interfaces
 RUN sed -i 's/127.0.0.1/0.0.0.0/g' /etc/mysql/mariadb.conf.d/50-server.cnf
 
-RUN mkdir -p /run/mysqld && \
-    chown -R mysql:mysql /run/mysqld && \
-    chmod +x /run/mysqld
+# Ensure runtime directory exists and permissions are correct
+RUN mkdir -p /run/mysqld && chown -R mysql:mysql /run/mysqld
 
-COPY . .
+# Copy custom setup script and related files (make sure .dockerignore excludes tools if needed)
+COPY . /app
 
-WORKDIR /tools
-
+WORKDIR /app/tools
 
 ENTRYPOINT [ "bash", "setup.sh" ]
-
-# CMD [ "sleep", "infinity" ]
-
 CMD [ "mariadbd" ]
-
-
