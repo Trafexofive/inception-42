@@ -42,15 +42,11 @@ services:
     networks:
       - inception-42
     ports:
-      - ":3306"
+      - "3306:3306"
     volumes:
       - maria-db:/var/lib/mysql
-    # healthcheck:
-    #   test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "--user=${WP_USER}", "--password=${WP_PASS}"]
-    #   interval: 20s
-    #   timeout: 15s
-    #   retries: 3
-    #   start_period: 10s 
+    healthcheck:
+      test: ["NONE"]
     restart: unless-stopped
 
   wordpress:
@@ -60,6 +56,7 @@ services:
       context: ./requirements/wordpress
       dockerfile: Dockerfile
     environment:
+      - WORDPRESS_DB_HOST=maria-db
       - WORDPRESS_DB_NAME=${WP_DB_NAME}
       - WORDPRESS_USER=${WP_USER}
       - WORDPRESS_PASSWORD=${WP_PASS}

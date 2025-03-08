@@ -1,80 +1,92 @@
-
+# ======================================== VARIABLES ========================================
 NAME = srcs/docker-compose.yml
 COMPOSE = docker-compose -f $(NAME)
 
+# ======================================== MAIN TARGETS ========================================
+.PHONY: all build up down run logs clean fclean prune re rere rmvol netprune ls it exec
+
 all: build
 
-# ======================================== GENERAL PURPOSE ========================================
+# ======================================== CONTAINER MANAGEMENT ========================================
 
-build: 
-	$(COMPOSE) build
+# Build containers without starting
+build:
+	@echo "Building containers..."
+	@$(COMPOSE) build
 
-run: down build
-	$(COMPOSE) up -d
-	$(COMPOSE) logs -f
+# Start containers in detached mode (after building)
+up: build
+	@echo "Starting containers in detached mode..."
+	@$(COMPOSE) up -d
 
+# Stop and remove containers
 down:
-	$(COMPOSE) down
+	@echo "Stopping containers..."
+	@$(COMPOSE) down
 
+# Build and start containers, showing logs
+run: down build
+	@echo "Starting containers and following logs..."
+	@$(COMPOSE) up -d
+	@$(COMPOSE) logs -f
+
+# Display container logs
 logs:
-	$(COMPOSE) logs -f
+	@echo "Displaying logs..."
+	@$(COMPOSE) logs -f
 
-it: 
-	$(COMPOSE) exec $(filter-out $@, $(MAKECMDGOALS)) /bin/bash
+it:
+	@$(COMPOSE) exec $(filter-out $@, $(MAKECMDGOALS)) /bin/bash
 
-exec: 
-	$(COMPOSE) exec $(filter-out $@, $(MAKECMDGOALS))
+exec:
+	@$(COMPOSE) exec $(filter-out $@, $(MAKECMDGOALS))
 
-
+# List containers, volumes and images
 ls:
-	@echo "Containers:"
+	@echo "===== Containers ====="
 	@$(COMPOSE) ps
-	@echo "Volumes:"
+	@echo "\n===== Volumes ====="
 	@docker volume ls
-	@echo "images:"
+	@echo "\n===== Images ====="
 	@$(COMPOSE) images
 
-# runit: run 
-# 	$(compose) exec $(filter-out $@, $(makecmdgoals)) /bin/bash
-  
-
 # ======================================== CLEANING ========================================
-# clean :
 
+# Remove volumes and rebuild
 rere: rmvol prune run
 
+# Restart containers
 re: down run
 
+# Remove containers, images, and volumes used by the compose file
 clean:
-	docker-compose -f $(NAME) down --volumes --rmi all
+	@echo "Removing containers, images, and volumes..."
+	@$(COMPOSE) down --volumes --rmi all
 
+# Complete cleanup (containers, networks, images, build cache)
+fclean: down
+	@echo "Performing complete cleanup..."
+	@$(COMPOSE) rm -f
+	@make prune
 
-prune:
-	docker system prune -f
+# Prune Docker system (remove unused containers, networks, images)
+prune: down
+	@echo "Pruning Docker system..."
+	@docker system prune -f
 
-
-# kill-all:
-# 	docker kill $(docker ps -aq)
-#
-# rmi: kill-all
-# 	docker image rm $(docker images -aq)
-
-# Basic cleanup (removes containers, images, build cache, networks)
-# docker system prune -f
-
-# Advanced cleanup (includes volumes)
-
+# Prune Docker networks
 netprune:
-	docker network prune -f
+	@echo "Pruning Docker networks..."
+	@docker network prune -f
 
+# Remove volumes and orphaned containers
 rmvol:
-	$(COMPOSE) down -v --remove-orphans
+	@echo "Removing volumes and orphaned containers..."
+	@$(COMPOSE) down -v --remove-orphans
 
-re: fclean all
+# Clean everything and rebuild
+rebuild: fclean all
 
-.PHONY: all build clean fclean detach re
-
-
-# ======================================== TODO ========================================
-# make a compose project -p.
-#
+# Prevent errors for arguments passed to targets
+%:
+	@:

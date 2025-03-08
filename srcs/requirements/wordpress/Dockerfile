@@ -13,9 +13,9 @@
 FROM debian:buster
 
 
-RUN apt-get update\
+RUN apt-get update \
   && apt-get upgrade -y \
-  && apt-get install -y vim wget php php-fpm php-mysql php-xml php-mbstring mariadb-client
+  && apt-get install -y wget curl php php7.3-fpm php-mysql php-xml php-mbstring mariadb-client
 
 
 RUN sed -i "s|/run/php/php7.3-fpm.sock|9000|g" /etc/php/7.3/fpm/pool.d/www.conf \
@@ -28,13 +28,15 @@ RUN wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.ph
     && chmod +x wp-cli.phar \
     && mv wp-cli.phar /bin/wp
 
+COPY . .
+
+RUN chmod +x /tools/setup.sh
+
 USER www-data
 
-COPY . .
 
 WORKDIR /var/www/wordpress
 
-RUN chmod +x /tools/setup.sh
 
 ENTRYPOINT ["bash", "/tools/setup.sh" ]
 
