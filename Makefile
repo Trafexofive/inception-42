@@ -25,6 +25,9 @@ build:
 	@echo "Building containers..."
 	@$(COMPOSE) build
 
+# Rebuild then run containers
+rebuild: fclean run
+
 no-cache:
 	@echo "Building containers..."
 	@$(COMPOSE) build --no-cache
@@ -37,7 +40,7 @@ down:
 	@echo "Stopping containers..."
 	@$(COMPOSE) down
 
-run: down no-cache # Build without cache for now
+run: down# Build without cache for now
 	@echo "Starting containers and following logs..."
 	@$(COMPOSE) up -d
 	@$(COMPOSE) logs -f
@@ -63,7 +66,7 @@ ls:
 # ======================================== CLEANING ========================================
 
 # Remove volumes and rebuild
-rere: rmvol prune run
+# rere: rebuild
 
 # Restart containers
 re: down run
@@ -74,13 +77,13 @@ clean:
 	@$(COMPOSE) down --volumes --rmi all
 
 # Complete cleanup (containers, networks, images, build cache)
-fclean: down
+fclean: down clean
 	@echo "Performing complete cleanup..."
 	@$(COMPOSE) rm -f
 	@make prune
 
 # Prune Docker system (remove unused containers, networks, images)
-prune: down
+prune: rmvol netprune
 	@echo "Pruning Docker system..."
 	@docker system prune -f
 
@@ -94,8 +97,6 @@ rmvol:
 	@echo "Removing volumes and orphaned containers..."
 	@$(COMPOSE) down -v --remove-orphans
 
-# Clean everything and rebuild
-rebuild: fclean all
 
 # Prevent errors for arguments passed to targets
 %:

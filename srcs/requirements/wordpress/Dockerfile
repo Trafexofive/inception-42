@@ -41,7 +41,7 @@ COPY . /app
 
 RUN chmod +x /app/tools/setup.sh
 
-# Switch to non-root user for running WordPress
+# # Switch to non-root user for running WordPress
 USER www-data
 
 WORKDIR /var/www/wordpress
