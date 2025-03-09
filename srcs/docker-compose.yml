@@ -22,7 +22,7 @@ services:
     networks:
       - inception-42
     ports:
-      - "4443:443"
+      - "443:443"
     depends_on:
       wordpress:
         condition: service_started

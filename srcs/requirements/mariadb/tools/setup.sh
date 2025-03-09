@@ -17,13 +17,15 @@ sleep 5
 # Check if the WordPress database exists
 if ! mysql -u root -p${MYSQL_ROOT_PASSWORD} -e "USE ${WORDPRESS_DB_NAME}" 2>/dev/null; then
     echo "Setting up MariaDB security and WordPress database..."
-    mysql -u root -p${MYSQL_ROOT_PASSWORD} <<EOF
+    # Connect without password initially to set root password
+    mysql -u root <<EOF
 ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';
 DELETE FROM mysql.user WHERE User='';
 DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');
 DROP DATABASE IF EXISTS test;
 DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';
 CREATE DATABASE IF NOT EXISTS ${WORDPRESS_DB_NAME};
+FLUSH PRIVILEGES;
 EOF
     echo "Database setup completed."
 else
