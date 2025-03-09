@@ -14,7 +14,14 @@
 set -e
 
 echo "Waiting for database connection..."
-sleep 5
+
+# Wait for MariaDB to be ready
+while ! mysql -h maria-db -u ${WORDPRESS_USER} -p${WORDPRESS_PASSWORD} -e "USE ${WORDPRESS_DB_NAME};" 2>/dev/null; do
+    echo "Database not ready yet. Retrying in 5 seconds..."
+    sleep 5
+done
+
+echo "Database connection established!"
 
 # Download WordPress core files if they are not present
 if [ ! -f "wp-load.php" ]; then
@@ -26,9 +33,9 @@ fi
 if [ ! -f "wp-config.php" ]; then
     echo "Creating WordPress configuration..."
     wp config create \
-        --dbname="$WORDPRESS_DB_NAME" \
-        --dbuser="$WORDPRESS_USER" \
-        --dbpass="$WORDPRESS_PASSWORD" \
+        --dbname="${WORDPRESS_DB_NAME}" \
+        --dbuser="${WORDPRESS_USER}" \
+        --dbpass="${WORDPRESS_PASSWORD}" \
         --dbhost="maria-db" \
         --allow-root
 fi
@@ -37,11 +44,11 @@ fi
 if ! wp core is-installed --allow-root; then
     echo "Installing WordPress..."
     wp core install \
-        --url="$WP_URL" \
-        --title="$WP_TITLE" \
-        --admin_user="$WP_ADMIN_USER" \
-        --admin_password="$WP_ADMIN_PASS" \
-        --admin_email="$WP_ADMIN_EMAIL" \
+        --url="${WP_URL}" \
+        --title="${WP_TITLE}" \
+        --admin_user="${WP_ADMIN_USER}" \
+        --admin_password="${WP_ADMIN_PASS}" \
+        --admin_email="${WP_ADMIN_EMAIL}" \
         --allow-root
     echo "WordPress installation complete!"
 else
@@ -51,3 +58,4 @@ fi
 echo "Starting PHP-FPM..."
 
 exec "$@"
+
