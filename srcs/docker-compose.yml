@@ -46,8 +46,8 @@ services:
     volumes:
       - maria-db-data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "mariadb"]
-      interval: 5s 
+      test: ["CMD-SHELL", "mysqladmin ping -u root -p$$MYSQL_ROOT_PASSWORD"]
+      interval: 5s
       timeout: 5s
       retries: 3
     restart: unless-stopped
