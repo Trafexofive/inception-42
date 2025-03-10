@@ -6,41 +6,49 @@
 #    By: mlamkadm <mlamkadm@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/03 13:07:58 by mlamkadm          #+#    #+#              #
-#    Updated: 2025/03/03 13:07:58 by mlamkadm         ###   ########.fr        #
+#    Updated: 2025/03/10 21:40:26 by mlamkadm         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 #!/bin/bash
-set -eo pipefail
 
-# Create PHP-FPM runtime directory
+echo "Starting PHP-FPM Setup Script ..."
+
+# Ensure proper permissions
+chown -R www-data:www-data /var/www/wordpress
+chmod -R 755 /var/www/wordpress
+
+echo "Given Permissions to www-data user, creating necessary directories and files..."
+
 mkdir -p /run/php
 chown www-data:www-data /run/php
 chmod 755 /run/php
 
-# Wait for MariaDB (30s timeout)
-timeout=30
+
+echo "Attempting to connect to database..."
+timeout=15
+
 while ! mysql -h maria-db -u ${WORDPRESS_USER} -p${WORDPRESS_PASSWORD} -e "USE ${WORDPRESS_DB_NAME}" 2>/dev/null; do
     ((timeout--))
     if [ $timeout -lt 1 ]; then
-        echo "ERROR: Database connection timed out"
+        echo "WARNING: Database connection timed out"
         exit 1
     fi
     sleep 1
 done
 
 echo "Database connection established!"
-  #
-  # wp user create "$WP_N_USER" "$WP_N_EMAIL" --user_pass="$WP_N_PASSWORD" --role="$WP_N_ROLE" --allow-root
-# Install WordPress core if not present
+
+echo "Checking if WordPress is installed..."
 if [ ! -f "wp-settings.php" ]; then
-    echo "Downloading WordPress..."
+    echo "WP is not installed, Downloading WordPress..."
     wp core download --quiet
 fi
+echo "WordPress is installed!"
 
 # Create config if missing
 if [ ! -f "wp-config.php" ]; then
-    echo "Creating WordPress config..."
+    echo "wordpress Files Missing, Creating WordPress config ..."
     wp config create \
         --dbname=${WORDPRESS_DB_NAME} \
         --dbuser=${WORDPRESS_USER} \
@@ -65,10 +73,14 @@ if ! wp core is-installed 2>/dev/null; then
     echo "WordPress installed successfully!"
 fi
 
-# Ensure proper permissions
-chown -R www-data:www-data /var/www/wordpress
-chmod -R 755 /var/www/wordpress
+if wp user get "$EXTRA_USERNAME" --field=ID --allow-root > /dev/null 2>&1; then
+    echo "User with username '$EXTRA_USERNAME' already exists."
+else 
+  echo "Creating user with username '$EXTRA_USERNAME'..."
+  wp user create "$EXTRA_USERNAME" "$EXTRA_EMAIL" --user_pass="$EXTRA_PASS" --role="$EXTRA_ROLE" --allow-root
+fi
 
-echo "Script End: Starting PHP-FPM..."
+echo "PHP-FPM Setup complete"
+echo "Starting PHP-FPM..."
 
 exec "$@"

@@ -10,6 +10,27 @@
 #                                                                              #
 # **************************************************************************** #
 
+volumes:
+  maria-db:
+    name: maria-db-volume
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/mlamkadm/data/maria-db
+  wordpress:
+    name: wordpress-volume
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: /home/mlamkadm/data/wordpress
+
+networks:
+  inception-42:
+    name: inception-network
+
+
 services:
   nginx:
     container_name: nginx
@@ -44,7 +65,7 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - maria-db-data:/var/lib/mysql
+      - maria-db:/var/lib/mysql
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin ping -u root -p$$MYSQL_ROOT_PASSWORD"]
       interval: 5s
@@ -63,31 +84,21 @@ services:
       - WORDPRESS_DB_NAME=${WP_DB_NAME}
       - WORDPRESS_USER=${WP_USER}
       - WORDPRESS_PASSWORD=${WP_PASS}
-
       - WP_ADMIN_USER=${WP_ADMIN_USER}
       - WP_ADMIN_PASS=${WP_ADMIN_PASS}
       - WP_ADMIN_EMAIL=${WP_ADMIN_EMAIL}
       - WP_URL=${WP_URL}
+
+      - EXTRA_USERNAME=${EXTRA_USERNAME}
+      - EXTRA_EMAIL=${EXTRA_EMAIL}
+      - EXTRA_PASS=${EXTRA_PASS}
+      - EXTRA_ROLE=${EXTRA_ROLE}
     networks:
       - inception-42
     volumes:
       - wordpress:/var/www/wordpress
     depends_on:
       maria-db:
-        condition: service_started
+        condition: service_healthy
     restart: unless-stopped
-    # healthcheck:
-    #   test: ["CMD", "curl", "-f", "http://localhost"]
-    #   interval: 20s
-    #   timeout: 10s
-    #   retries: 3
 
-volumes:
-  maria-db-data:
-    name: db
-  wordpress:
-    name: wp
-
-networks:
-  inception-42:
-    name: inception-network

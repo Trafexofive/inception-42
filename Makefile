@@ -40,7 +40,7 @@ down:
 	@echo "Stopping containers..."
 	@$(COMPOSE) down
 
-run: down# Build without cache for now
+run: down
 	@echo "Starting containers and following logs..."
 	@$(COMPOSE) up -d
 	@$(COMPOSE) logs -f
@@ -72,12 +72,12 @@ ls:
 re: down run
 
 # Remove containers, images, and volumes used by the compose file
-clean:
+clean: down
 	@echo "Removing containers, images, and volumes..."
-	@$(COMPOSE) down --volumes --rmi all
+	@$(COMPOSE) down --volumes --remove-orphans --rmi all
 
 # Complete cleanup (containers, networks, images, build cache)
-fclean: down clean
+fclean: clean rmvol
 	@echo "Performing complete cleanup..."
 	@$(COMPOSE) rm -f
 	@make prune
@@ -94,8 +94,14 @@ netprune:
 
 # Remove volumes and orphaned containers
 rmvol:
-	@echo "Removing volumes and orphaned containers..."
+	@echo "removing volumes and orphaned containers..."
 	@$(COMPOSE) down -v --remove-orphans
+
+rmextern:
+	@echo "removing externally bounded volumes"
+	@sudo rm -rf /home/mlamkadm/data
+	mkdir -p /home/mlamkadm/data/maria-db
+	mkdir -p /home/mlamkadm/data/wordpress
 
 
 # Prevent errors for arguments passed to targets

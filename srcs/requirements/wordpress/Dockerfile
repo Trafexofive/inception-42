@@ -12,7 +12,6 @@
 
 FROM debian:bullseye
 
-# Install required packages
 RUN apt-get update && \
     apt-get install -y wget curl php7.4-fpm php7.4-mysql php7.4-xml php7.4-mbstring mariadb-client && \
     rm -rf /var/lib/apt/lists/*

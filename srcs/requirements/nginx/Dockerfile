@@ -14,9 +14,10 @@ RUN mkdir -p /etc/nginx/ssl && \
     -out /etc/nginx/ssl/cert.crt \
     -subj "/C=MO/ST=Settat/L=Khouribga/O=42/OU=1337/CN=mlamkadm.42.fr"
 
-# Copy The Nginx Configuration File
 COPY ./tools/default.conf /etc/nginx/sites-enabled/default
 
-# Run Nginx
+# RUN sleep 5
+
+# Run Daemon-less Nginx
 CMD ["nginx", "-g", "daemon off;"]
 
