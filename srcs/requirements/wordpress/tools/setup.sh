@@ -30,7 +30,8 @@ while ! mysql -h maria-db -u ${WORDPRESS_USER} -p${WORDPRESS_PASSWORD} -e "USE $
 done
 
 echo "Database connection established!"
-
+  #
+  # wp user create "$WP_N_USER" "$WP_N_EMAIL" --user_pass="$WP_N_PASSWORD" --role="$WP_N_ROLE" --allow-root
 # Install WordPress core if not present
 if [ ! -f "wp-settings.php" ]; then
     echo "Downloading WordPress..."

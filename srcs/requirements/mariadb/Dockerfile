@@ -29,4 +29,5 @@ COPY . /app
 WORKDIR /app/tools
 
 ENTRYPOINT [ "bash", "setup.sh" ]
+
 CMD [ "mariadbd" ]

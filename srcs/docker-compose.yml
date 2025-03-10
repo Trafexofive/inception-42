@@ -13,7 +13,7 @@
 services:
   nginx:
     container_name: nginx
-    image: nginx
+    image: nginx:lbro
     build:
       context: ./requirements/nginx
       dockerfile: Dockerfile
@@ -30,7 +30,7 @@ services:
 
   maria-db:
     container_name: maria-db
-    image: mariadb
+    image: mariadb:lbro
     build:
       context: ./requirements/mariadb
       dockerfile: Dockerfile
@@ -54,7 +54,7 @@ services:
 
   wordpress:
     container_name: wordpress
-    image: wordpress
+    image: wordpress:lbro
     build:
       context: ./requirements/wordpress
       dockerfile: Dockerfile
