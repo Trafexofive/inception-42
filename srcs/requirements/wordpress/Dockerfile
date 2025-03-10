@@ -17,7 +17,6 @@ RUN apt-get update && \
     apt-get install -y wget curl php7.4-fpm php7.4-mysql php7.4-xml php7.4-mbstring mariadb-client && \
     rm -rf /var/lib/apt/lists/*
 
-# Update PHP-FPM socket configuration to use TCP port 9000
 RUN sed -i "s|/run/php/php7.4-fpm.sock|9000|g" /etc/php/7.4/fpm/pool.d/www.conf && \
     mkdir -p /run/php && \
     chown www-data:www-data /run/php && \
@@ -41,7 +40,6 @@ COPY . /app
 
 RUN chmod +x /app/tools/setup.sh
 
-# # Switch to non-root user for running WordPress
 USER www-data
 
 WORKDIR /var/www/wordpress
