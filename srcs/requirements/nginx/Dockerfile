@@ -18,6 +18,7 @@ COPY ./tools/default.conf /etc/nginx/sites-enabled/default
 
 # RUN sleep 5
 
-# Run Daemon-less Nginx
+RUN echo "Nginx Setup Complete, Running Nginx in the Foreground"
+
 CMD ["nginx", "-g", "daemon off;"]
 

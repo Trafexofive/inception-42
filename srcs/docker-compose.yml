@@ -18,6 +18,7 @@ volumes:
       type: none
       o: bind
       device: /home/mlamkadm/data/maria-db
+
   wordpress:
     name: wordpress-volume
     driver: local
@@ -63,7 +64,7 @@ services:
     networks:
       - inception-42
     ports:
-      - "3306:3306"
+      - ":3306"
     volumes:
       - maria-db:/var/lib/mysql
     healthcheck:

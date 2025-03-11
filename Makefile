@@ -15,8 +15,8 @@ NAME = srcs/docker-compose.yml
 COMPOSE = docker-compose -f $(NAME)
 
 # ======================================== MAIN TARGETS ========================================
-.PHONY: all build up down run logs clean fclean prune re rere rmvol netprune ls it exec
-
+#
+.PHONY: all build rebuild no-cache up down run logs it exec ls clean fclean re rmextern
 all: build
 
 # ======================================== CONTAINER MANAGEMENT ========================================
@@ -65,9 +65,6 @@ ls:
 
 # ======================================== CLEANING ========================================
 
-# Remove volumes and rebuild
-# rere: rebuild
-
 # Restart containers
 re: down run
 
@@ -77,33 +74,25 @@ clean: down
 	@$(COMPOSE) down --volumes --remove-orphans --rmi all
 
 # Complete cleanup (containers, networks, images, build cache)
-fclean: clean rmvol
+fclean: rmextern clean
 	@echo "Performing complete cleanup..."
 	@$(COMPOSE) rm -f
 	@make prune
 
 # Prune Docker system (remove unused containers, networks, images)
-prune: rmvol netprune
+prune: clean netprune
 	@echo "Pruning Docker system..."
-	@docker system prune -f
+	@docker system prune -af
 
 # Prune Docker networks
 netprune:
 	@echo "Pruning Docker networks..."
 	@docker network prune -f
 
-# Remove volumes and orphaned containers
-rmvol:
-	@echo "removing volumes and orphaned containers..."
-	@$(COMPOSE) down -v --remove-orphans
 
 rmextern:
 	@echo "removing externally bounded volumes"
 	@sudo rm -rf /home/mlamkadm/data
-	mkdir -p /home/mlamkadm/data/maria-db
-	mkdir -p /home/mlamkadm/data/wordpress
+	@mkdir -p /home/mlamkadm/data/maria-db
+	@mkdir -p /home/mlamkadm/data/wordpress
 
-
-# Prevent errors for arguments passed to targets
-%:
-	@:

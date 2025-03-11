@@ -48,7 +48,7 @@ echo "WordPress is installed!"
 
 # Create config if missing
 if [ ! -f "wp-config.php" ]; then
-    echo "wordpress Files Missing, Creating WordPress config ..."
+    echo "wordpress Config Missing, Creating WordPress config ..."
     wp config create \
         --dbname=${WORDPRESS_DB_NAME} \
         --dbuser=${WORDPRESS_USER} \
@@ -56,11 +56,12 @@ if [ ! -f "wp-config.php" ]; then
         --dbhost=maria-db \
         --skip-check \
         --quiet
+else 
+    echo "WordPress Config already exists!"
 fi
 
-# Install WordPress if not installed
 if ! wp core is-installed 2>/dev/null; then
-    echo "Installing WordPress..."
+    echo "WordPress Not installed, Installing WordPress..."
     wp core install \
         --url=${WP_URL} \
         --title="${WP_TITLE}" \
@@ -71,6 +72,8 @@ if ! wp core is-installed 2>/dev/null; then
         --quiet
 
     echo "WordPress installed successfully!"
+else 
+    echo "WordPress is already installed!"
 fi
 
 if wp user get "$EXTRA_USERNAME" --field=ID --allow-root > /dev/null 2>&1; then
@@ -79,6 +82,9 @@ else
   echo "Creating user with username '$EXTRA_USERNAME'..."
   wp user create "$EXTRA_USERNAME" "$EXTRA_EMAIL" --user_pass="$EXTRA_PASS" --role="$EXTRA_ROLE" --allow-root
 fi
+
+wp theme install twentytwentyfour --allow-root
+wp theme activate twentytwentyfour --allow-root
 
 echo "PHP-FPM Setup complete"
 echo "Starting PHP-FPM..."
