@@ -23,6 +23,9 @@ chmod 755 /run/php
 chown -R www-data:www-data /var/www/wordpress
 chmod -R 755 /var/www/wordpress
 
+# ======================================================================================
+# ======================================================================================
+
 echo "Attempting to connect to database..."
 timeout=15
 
@@ -35,6 +38,9 @@ while ! mysql -h maria-db -u ${WORDPRESS_USER} -p${WORDPRESS_PASSWORD} -e "USE $
     echo "Database connection failed, retrying connection ..."
     sleep 1
 done
+
+# ======================================================================================
+# ======================================================================================
 
 echo "Database connection established!"
 
@@ -74,12 +80,18 @@ else
     echo "WordPress is already installed!"
 fi
 
+# ======================================================================================
+# ======================================================================================
+
 if wp user get "$EXTRA_USERNAME" --field=ID --allow-root > /dev/null 2>&1; then
     echo "User with username '$EXTRA_USERNAME' already exists."
 else 
   echo "Creating user with username '$EXTRA_USERNAME'..."
   wp user create "$EXTRA_USERNAME" "$EXTRA_EMAIL" --user_pass="$EXTRA_PASS" --role="$EXTRA_ROLE"
 fi
+
+# ======================================================================================
+# ======================================================================================
 
 wp theme install twentytwentyfour --allow-root
 wp theme activate twentytwentyfour --allow-root

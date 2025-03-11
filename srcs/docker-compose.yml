@@ -10,6 +10,10 @@
 #                                                                              #
 # **************************************************************************** #
 
+# ======================================================================================
+# STACK
+# ======================================================================================
+
 services:
   nginx:
     container_name: nginx
@@ -80,6 +84,9 @@ services:
         condition: service_healthy
     restart: always
 
+# ======================================================================================
+# VOLUMES
+# ======================================================================================
 
 volumes:
   maria-db:
@@ -88,7 +95,7 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: /home/mlamkadm/data/maria-db
+      device: /home/${USER}/data/maria-db
 
   wordpress:
     name: wordpress-volume
@@ -96,7 +103,11 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: /home/mlamkadm/data/wordpress
+      device: /home/${USER}/data/wordpress
+
+# ======================================================================================
+# NETWORKS
+# ======================================================================================
 
 networks:
   inception-42:
