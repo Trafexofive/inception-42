@@ -1,5 +1,16 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    setup.sh                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: mlamkadm <mlamkadm@student.42.fr>          +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2025/03/11 21:25:04 by mlamkadm          #+#    #+#              #
+#    Updated: 2025/03/11 21:25:04 by mlamkadm         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
 #!/bin/bash
-set -e
 
 echo "Starting MariaDB Setup Script ..."
 
@@ -24,6 +35,7 @@ while ! mysqladmin ping -u root --silent; do
         echo "MariaDB startup timed out!"
         exit 1
     fi
+    echo "MariaDB is not ready yet. Retrying connection..."
 done
 
 

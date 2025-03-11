@@ -11,6 +11,7 @@
 # **************************************************************************** #
 
 # ======================================== VARIABLES ========================================
+
 NAME = srcs/docker-compose.yml
 COMPOSE = docker-compose -f $(NAME)
 
@@ -25,7 +26,6 @@ build:
 	@echo "Building containers..."
 	@$(COMPOSE) build
 
-# Rebuild then run containers
 rebuild: fclean run
 
 no-cache:
@@ -65,26 +65,21 @@ ls:
 
 # ======================================== CLEANING ========================================
 
-# Restart containers
 re: down run
 
-# Remove containers, images, and volumes used by the compose file
 clean: down
 	@echo "Removing containers, images, and volumes..."
 	@$(COMPOSE) down --volumes --remove-orphans --rmi all
 
-# Complete cleanup (containers, networks, images, build cache)
 fclean: rmextern clean
 	@echo "Performing complete cleanup..."
 	@$(COMPOSE) rm -f
 	@make prune
 
-# Prune Docker system (remove unused containers, networks, images)
 prune: clean netprune
 	@echo "Pruning Docker system..."
 	@docker system prune -af
 
-# Prune Docker networks
 netprune:
 	@echo "Pruning Docker networks..."
 	@docker network prune -f

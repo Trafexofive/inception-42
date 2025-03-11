@@ -14,7 +14,6 @@
 
 echo "Starting PHP-FPM Setup Script ..."
 
-
 echo "Giving Permissions to www-data user, creating necessary directories and files..."
 
 mkdir -p /run/php

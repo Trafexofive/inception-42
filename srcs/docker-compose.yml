@@ -13,10 +13,10 @@
 services:
   nginx:
     container_name: nginx
-    image: nginx:lbro
     build:
       context: ./requirements/nginx
       dockerfile: Dockerfile
+    image: nginx:lbro
     volumes:
       - wordpress:/var/www/wordpress
     networks:
@@ -67,7 +67,6 @@ services:
       - WP_ADMIN_PASS=${WP_ADMIN_PASS}
       - WP_ADMIN_EMAIL=${WP_ADMIN_EMAIL}
       - WP_URL=${WP_URL}
-
       - EXTRA_USERNAME=${EXTRA_USERNAME}
       - EXTRA_EMAIL=${EXTRA_EMAIL}
       - EXTRA_PASS=${EXTRA_PASS}
@@ -95,10 +94,11 @@ volumes:
     name: wordpress-volume
     driver: local
     driver_opts:
-      type: 'none'
-      o: 'bind'
+      type: none
+      o: bind
       device: /home/mlamkadm/data/wordpress
 
 networks:
   inception-42:
     name: inception-network
+    driver: bridge
