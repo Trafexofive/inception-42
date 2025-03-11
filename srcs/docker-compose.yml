@@ -10,28 +10,6 @@
 #                                                                              #
 # **************************************************************************** #
 
-volumes:
-  maria-db:
-    name: maria-db-volume
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: /home/mlamkadm/data/maria-db
-
-  wordpress:
-    name: wordpress-volume
-    driver: local
-    driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: /home/mlamkadm/data/wordpress
-
-networks:
-  inception-42:
-    name: inception-network
-
-
 services:
   nginx:
     container_name: nginx
@@ -48,7 +26,7 @@ services:
     depends_on:
       wordpress:
         condition: service_started
-    restart: unless-stopped
+    restart: always
 
   maria-db:
     container_name: maria-db
@@ -72,7 +50,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 3
-    restart: unless-stopped
+    restart: always
 
   wordpress:
     container_name: wordpress
@@ -81,7 +59,7 @@ services:
       context: ./requirements/wordpress
       dockerfile: Dockerfile
     environment:
-      - WORDPRESS_DB_HOST=maria-db
+      - WORDPRESS_DB_HOST=${DB_HOST}
       - WORDPRESS_DB_NAME=${WP_DB_NAME}
       - WORDPRESS_USER=${WP_USER}
       - WORDPRESS_PASSWORD=${WP_PASS}
@@ -101,5 +79,26 @@ services:
     depends_on:
       maria-db:
         condition: service_healthy
-    restart: unless-stopped
+    restart: always
 
+
+volumes:
+  maria-db:
+    name: maria-db-volume
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/mlamkadm/data/maria-db
+
+  wordpress:
+    name: wordpress-volume
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: /home/mlamkadm/data/wordpress
+
+networks:
+  inception-42:
+    name: inception-network

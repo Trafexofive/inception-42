@@ -14,16 +14,15 @@
 
 echo "Starting PHP-FPM Setup Script ..."
 
-# Ensure proper permissions
-chown -R www-data:www-data /var/www/wordpress
-chmod -R 755 /var/www/wordpress
 
-echo "Given Permissions to www-data user, creating necessary directories and files..."
+echo "Giving Permissions to www-data user, creating necessary directories and files..."
 
 mkdir -p /run/php
 chown www-data:www-data /run/php
 chmod 755 /run/php
 
+chown -R www-data:www-data /var/www/wordpress
+chmod -R 755 /var/www/wordpress
 
 echo "Attempting to connect to database..."
 timeout=15
@@ -34,6 +33,7 @@ while ! mysql -h maria-db -u ${WORDPRESS_USER} -p${WORDPRESS_PASSWORD} -e "USE $
         echo "WARNING: Database connection timed out"
         exit 1
     fi
+    echo "Database connection failed, retrying connection ..."
     sleep 1
 done
 
@@ -46,14 +46,13 @@ if [ ! -f "wp-settings.php" ]; then
 fi
 echo "WordPress is installed!"
 
-# Create config if missing
 if [ ! -f "wp-config.php" ]; then
     echo "wordpress Config Missing, Creating WordPress config ..."
     wp config create \
         --dbname=${WORDPRESS_DB_NAME} \
         --dbuser=${WORDPRESS_USER} \
         --dbpass=${WORDPRESS_PASSWORD} \
-        --dbhost=maria-db \
+        --dbhost=${WORDPRESS_DB_HOST}\
         --skip-check \
         --quiet
 else 
@@ -80,7 +79,7 @@ if wp user get "$EXTRA_USERNAME" --field=ID --allow-root > /dev/null 2>&1; then
     echo "User with username '$EXTRA_USERNAME' already exists."
 else 
   echo "Creating user with username '$EXTRA_USERNAME'..."
-  wp user create "$EXTRA_USERNAME" "$EXTRA_EMAIL" --user_pass="$EXTRA_PASS" --role="$EXTRA_ROLE" --allow-root
+  wp user create "$EXTRA_USERNAME" "$EXTRA_EMAIL" --user_pass="$EXTRA_PASS" --role="$EXTRA_ROLE"
 fi
 
 wp theme install twentytwentyfour --allow-root

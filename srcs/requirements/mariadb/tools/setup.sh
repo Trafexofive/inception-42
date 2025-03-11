@@ -4,18 +4,32 @@ set -e
 echo "Starting MariaDB Setup Script ..."
 
 if [ ! -d "/var/lib/mysql/mysql" ]; then
-    echo "Initializing MariaDB data directory..."
+    echo "No MariaDB dir found, Initializing MariaDB data directory..."
     mysql_install_db --user=mysql --datadir=/var/lib/mysql
+else
+    echo "MariaDB data directory already exists. Skipping initialization."
 fi
+
+# ======================================================================================
+# ======================================================================================
 
 mariadbd &
 echo "Waiting for MariaDB to start..."
-sleep 5
+
+timeout=15
+while ! mysqladmin ping -u root --silent; do
+    sleep 1
+    ((timeout--))
+    if [ $timeout -le 0 ]; then
+        echo "MariaDB startup timed out!"
+        exit 1
+    fi
+done
+
 
 # ======================================================================================
 # ======================================================================================
 
-# Check if the WordPress database exists, if not, create it, along with the WordPress user
 if ! mysql -u root -p${MYSQL_ROOT_PASSWORD} -e "USE ${WORDPRESS_DB_NAME}" 2>/dev/null; then
     echo "Setting up MariaDB security and WordPress database..."
     mysql -u root <<EOF
@@ -28,10 +42,6 @@ EOF
 else
     echo "WordPress database already exists. Skipping setup."
 fi
-
-# ======================================================================================
-# ======================================================================================
-
 
 # ======================================================================================
 # ======================================================================================

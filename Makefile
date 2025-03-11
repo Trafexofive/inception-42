@@ -90,7 +90,7 @@ netprune:
 	@docker network prune -f
 
 
-rmextern:
+rmextern: down
 	@echo "removing externally bounded volumes"
 	@sudo rm -rf /home/mlamkadm/data
 	@mkdir -p /home/mlamkadm/data/maria-db
